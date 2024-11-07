@@ -2,6 +2,7 @@
   "name": "madSemesterProject",
   "version": "1.0.0",
   "main": "expo-router/entry",
+  "type": "module",
   "scripts": {
     "android": "expo start --android",
     "ios": "expo start --ios",
