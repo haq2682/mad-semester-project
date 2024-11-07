@@ -1,5 +1,6 @@
 import { Stack, Link } from 'expo-router';
-import { Button, Text, View } from 'tamagui';
+import { Button } from 'tamagui';
+import { View, Text } from "react-native";
 
 export default function Home() {
   return (
@@ -11,9 +12,11 @@ export default function Home() {
           <Button title="Show Details" />
         </Link>
       </Container> */}
-      <Stack.Screen options={{ headerShown: false }} />
-      <View>
-        <Text>Hello World</Text>
+      <View className="flex flex-row items-center justify-center h-full">
+        <View>
+          <Text className="text-red-500">Hello World</Text>
+          <Link href="/about">About Page</Link>
+        </View>
       </View>
     </>
   );

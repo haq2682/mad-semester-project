@@ -8,11 +8,13 @@ module.exports = function (api) {
       components: ['tamagui'],
       config: './tamagui.config.ts',
     },
+    "nativewind/babel",
   ]);
 
   return {
-    presets: ['babel-preset-expo'],
-
+    presets: [
+      ["babel-preset-expo", { jsxImportSource: "nativewind" }],
+    ],
     plugins,
   };
 };
