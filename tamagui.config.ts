@@ -2,8 +2,10 @@ import { createAnimations } from '@tamagui/animations-react-native';
 import { createInterFont } from '@tamagui/font-inter';
 import { createMedia } from '@tamagui/react-native-media-driver';
 import { shorthands } from '@tamagui/shorthands';
-import { themes, tokens } from '@tamagui/themes';
+import { tokens } from '@tamagui/themes';
 import { createTamagui, styled, SizableText, H1, YStack, Button as ButtonTamagui } from 'tamagui';
+
+import * as themes from './theme-output';
 
 const animations = createAnimations({
   bouncy: {
@@ -118,7 +120,7 @@ type AppConfig = typeof config;
 // Docs: https://tamagui.dev/docs/core/configuration
 
 declare module 'tamagui' {
-  interface TamaguiCustomConfig extends AppConfig {}
+  interface TamaguiCustomConfig extends AppConfig { }
 }
 
 export default config;
