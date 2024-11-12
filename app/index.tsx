@@ -1,8 +1,11 @@
 import { Stack, Link } from 'expo-router';
-import { Button, Theme } from 'tamagui';
-import { View, Text } from "react-native";
+import { useState } from 'react';
+import { Button, Theme, useTheme, View } from 'tamagui';
+import { Text } from "react-native";
+import config from '~/tamagui.config';
 
 export default function Home() {
+  const theme = useTheme();
   return (
     <>
       {/* <Stack.Screen options={{ title: 'Home' }} />
@@ -12,13 +15,16 @@ export default function Home() {
           <Button title="Show Details" />
         </Link>
       </Container> */}
-      <View className="flex flex-row items-center justify-center h-full">
+      <View backgroundColor={theme.background} flex={1} flexDirection='row' alignItems='center' justifyContent='center' height={'full'}>
         <View>
-          <Text className="text-red-500 text-center dark:text-red-300">Hello World</Text>
-          <Link href="/about" className="text-center">
-            About Page
+          <Text className="text-red-500 text-center dark:text-blue-300">Hello World</Text>
+          <Link href="/auth/signup" className="text-center">
+            Sign Up
           </Link>
-          <Button>Hello World Button</Button>
+          <Link href="/auth/login" className="text-center">
+            Log In
+          </Link>
+          <Button backgroundColor={theme.accentBackground} color={theme.color}>Hello World Button</Button>
         </View>
       </View>
     </>
