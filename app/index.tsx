@@ -18,6 +18,10 @@ interface CardData {
   price: number;
 }
 
+interface CategoryProps {
+  title: string;
+}
+
 const categoryData = [
   { id: '1', title: 'Category 1' },
   { id: '2', title: 'Category 2' },
@@ -39,7 +43,7 @@ const screenWidth = Dimensions.get('window').width;
 
 export default function Home() {
   const theme = useTheme();
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: CategoryProps }) => (
     <Stack
       bg={theme.color10}
       padding="$2"
