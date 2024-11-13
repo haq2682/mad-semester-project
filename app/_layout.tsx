@@ -13,13 +13,11 @@ export default function Layout() {
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
     InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
   });
-  const [theme, setTheme]: any = useState('system');
+  const [theme, setTheme] = useState<string>('system');
   const systemTheme: any = useColorScheme();
-
   const activeTheme: ThemeName = theme === 'system' ? systemTheme : theme;
 
   useEffect(() => {
-    console.log(systemTheme);
     if (loaded) {
       SplashScreen.hideAsync();
     }

@@ -1,11 +1,10 @@
-import { Link } from 'expo-router';
-import React, { useState } from 'react';
+import { Link, usePathname } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import { Button, Input, Text, Theme, useTheme, View, ScrollView, Stack, YStack, XStack, H4, Card } from 'tamagui';
 import { Image } from 'react-native'
 import { FlatList, Animated, Dimensions } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
-import { color } from '@tamagui/themes';
 
 interface CardItemProps {
   title: string;
@@ -43,6 +42,7 @@ const screenWidth = Dimensions.get('window').width;
 
 export default function Home() {
   const theme = useTheme();
+  const router = usePathname();
   const renderItem = ({ item }: { item: CategoryProps }) => (
     <Stack
       bg={theme.color10}
@@ -91,6 +91,8 @@ export default function Home() {
     else acc[acc.length - 1].push(item);
     return acc;
   }, []);
+
+  const isActive = (path: string) => router === path;
   return (
     <>
       {/* <Stack.Screen options={{ title: 'Home' }} />
@@ -147,13 +149,47 @@ export default function Home() {
             width: screenWidth * 0.8,
             height: '100%',
             transform: [{ translateX: slideAnim }],
-            backgroundColor: 'lightgray',
+            backgroundColor: theme.accentBackground.val,
             zIndex: 2,
           }}
         >
-          <YStack p="$4">
+          <YStack marginTop={40}>
             <YStack space>
-              <Button onPress={toggleSidebar}>Close Sidebar</Button>
+              <View
+                width={'100%'}
+                style={{
+                  flex: 1,
+                  position: 'relative',
+                }}
+                marginBottom={10}
+              >
+                <AntDesign
+                  name="close"
+                  size={24}
+                  style={{
+                    color: 'black',
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                  }}
+                  onPress={toggleSidebar}
+                />
+              </View>
+              <Link href="/" asChild onPress={toggleSidebar}>
+                <View padding="$4" backgroundColor={isActive('/') ? theme.color3 : theme.color2}>
+                  <Text color={isActive('/') ? theme.accentColor : theme.color}>Home</Text>
+                </View>
+              </Link>
+              <Link href="/profile" asChild onPress={toggleSidebar}>
+                <View padding="$4" backgroundColor={isActive('/profile') ? theme.color3 : theme.color2}>
+                  <Text color={isActive('/profile') ? theme.accentColor : theme.color}>Profile</Text>
+                </View>
+              </Link>
+              <Link href="/cart" asChild onPress={toggleSidebar}>
+                <View padding="$4" backgroundColor={isActive('/cart') ? theme.color3 : theme.color2}>
+                  <Text color={isActive('/cart') ? theme.accentColor : theme.color}>Cart</Text>
+                </View>
+              </Link>
             </YStack>
           </YStack>
         </Animated.View>
