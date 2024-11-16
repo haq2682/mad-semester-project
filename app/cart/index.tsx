@@ -1,5 +1,5 @@
-import { ScrollView, View, Text, useTheme, Card } from "tamagui";
-import { Stack } from 'expo-router';
+import { ScrollView, View, Text, useTheme, Card, YStack, Button, Input } from "tamagui";
+import { Stack, useNavigation } from 'expo-router';
 import { Image } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useEffect, useState } from "react";
@@ -31,12 +31,12 @@ const CartItem = ({ id, title, price, image, quantity, updateQuantity }: { id: n
                         <Image source={require('assets/item-burger.png')} className="h-20 w-20" />
                     </Card>
                     <View marginTop="$2" marginLeft="$3">
-                        <Text fontSize={16} fontWeight={700}>{title}</Text>
+                        <Text fontSize={16} fontWeight={700} color={theme.color}>{title}</Text>
                     </View>
                 </View>
                 <View flex={1} flexDirection="column" justifyContent="space-between" alignItems="flex-end">
                     <View>
-                        <Text>${price}</Text>
+                        <Text color={theme.color}>${price}</Text>
                     </View>
                     <View backgroundColor={theme.accentBackground} flex={1} flexDirection="row" flexGrow={0} marginBottom={10} paddingHorizontal="$2" paddingVertical="$2" borderRadius={10} justifyContent="space-between" alignItems="center">
                         <View backgroundColor={theme.background} borderRadius={100} padding="$1" aspectRatio={1} alignItems="center" justifyContent="center" onPress={() => updateQuantity(id, quantity - 1)}>
@@ -57,10 +57,39 @@ const CartItem = ({ id, title, price, image, quantity, updateQuantity }: { id: n
 
 export default function Cart() {
     const theme = useTheme();
+    const navigation = useNavigation();
     const [items, setItems] = useState<CartItemsProps[]>([]);
     const [subTotal, setSubTotal] = useState(0);
     const [grandTotal, setGrandTotal] = useState(0);
     let deliveryFee: number = 2.00;
+    const [paymentMethod, setPaymentMethod] = useState('');
+    const [cardDetails, setCardDetails] = useState({
+        cardNumber: '',
+        expiryDate: '',
+        cvv: '',
+        cardHolderName: '',
+    });
+
+    const handleConfirmPayment = () => {
+        if (paymentMethod === 'COD') {
+            alert('Cash on Delivery selected!');
+            navigation.navigate('confirm');
+        } else if (paymentMethod === 'Card') {
+            if (
+                cardDetails.cardNumber &&
+                cardDetails.expiryDate &&
+                cardDetails.cvv &&
+                cardDetails.cardHolderName
+            ) {
+                alert('Payment successful!');
+                navigation.navigate('confirm');
+            } else {
+                alert('Please fill in all card details.');
+            }
+        } else {
+            alert('Please select a payment method.');
+        }
+    };
 
     function updateQuantity(itemId: number, newQuantity: number): null {
         setItems(prevItems =>
@@ -90,7 +119,7 @@ export default function Cart() {
                     backgroundColor: theme.color8.val
                 }
             }} />
-            <ScrollView>
+            <ScrollView backgroundColor={theme.background} contentContainerStyle={{ flexGrow: 1 }}>
                 <View marginVertical={10}>
                     {
                         items.map((item) => {
@@ -102,18 +131,99 @@ export default function Cart() {
                 </View>
                 <View backgroundColor={theme.color3} paddingHorizontal={10}>
                     <View marginVertical={2.5} flex={1} flexDirection="row" justifyContent="space-between">
-                        <Text fontSize={16} fontWeight={900}>Subtotal</Text>
-                        <Text fontSize={16} fontWeight={900}>${subTotal}</Text>
+                        <Text fontSize={16} fontWeight={900} color={theme.color}>Subtotal</Text>
+                        <Text fontSize={16} fontWeight={900} color={theme.color}>${subTotal}</Text>
                     </View>
                     <View marginVertical={2.5} flex={1} flexDirection="row" justifyContent="space-between">
-                        <Text fontSize={14} fontWeight={800}>Delivery Fee</Text>
-                        <Text fontSize={14} fontWeight={800}>${deliveryFee}</Text>
+                        <Text fontSize={14} fontWeight={800} color={theme.color}>Delivery Fee</Text>
+                        <Text fontSize={14} fontWeight={800} color={theme.color}>${deliveryFee}</Text>
                     </View>
                     <View marginVertical={2.5} flex={1} flexDirection="row" justifyContent="space-between">
-                        <Text fontSize={18} fontWeight={900}>Grand Total</Text>
-                        <Text fontSize={18} fontWeight={900}>${grandTotal}</Text>
+                        <Text fontSize={18} fontWeight={900} color={theme.color}>Grand Total</Text>
+                        <Text fontSize={18} fontWeight={900} color={theme.color}>${grandTotal}</Text>
                     </View>
                 </View>
+                <YStack padding={20} space={20} flex={1}>
+                    <Text color={theme.color} fontWeight="900" fontSize={20} textAlign="center">
+                        Select Payment Method
+                    </Text>
+
+                    <YStack space={15}>
+                        <Button
+                            onPress={() => setPaymentMethod('COD')}
+                            backgroundColor={paymentMethod === 'COD' ? theme.accentBackground : theme.color1}
+                            borderColor={paymentMethod === 'COD' ? theme.color : 'black'}
+                            borderWidth={1}
+                            borderRadius={30}
+                            paddingVertical={15}
+                            height={52}
+                        >
+                            <Text color={theme.color} fontWeight="600" fontSize={16}>Cash on Delivery</Text>
+                        </Button>
+
+                        <Button
+                            onPress={() => setPaymentMethod('Card')}
+                            backgroundColor={paymentMethod === 'Card' ? theme.accentBackground : theme.color1}
+                            borderColor={paymentMethod === 'Card' ? theme.color : 'black'}
+                            borderWidth={1}
+                            borderRadius={30}
+                            paddingVertical={15}
+                            height={52}
+                        >
+                            <Text color={theme.color} fontWeight="600" fontSize={16}>Credit/Debit Card</Text>
+                        </Button>
+                    </YStack>
+
+                    {paymentMethod === 'Card' && (
+                        <YStack space={15} backgroundColor={theme.color1} padding={15} borderRadius={10}>
+                            <Input
+                                placeholder="Card Number"
+                                keyboardType="numeric"
+                                maxLength={16}
+                                onChangeText={(value) => setCardDetails({ ...cardDetails, cardNumber: value })}
+                                backgroundColor={theme.background}
+                                color={theme.color}
+                                fontSize={14}
+                            />
+                            <Input
+                                placeholder="Expiry Date (MM/YY)"
+                                maxLength={5}
+                                onChangeText={(value) => setCardDetails({ ...cardDetails, expiryDate: value })}
+                                backgroundColor={theme.background}
+                                color={theme.color}
+                                fontSize={14}
+                            />
+                            <Input
+                                placeholder="CVV"
+                                keyboardType="numeric"
+                                maxLength={3}
+                                onChangeText={(value) => setCardDetails({ ...cardDetails, cvv: value })}
+                                backgroundColor={theme.background}
+                                color={theme.color}
+                                fontSize={14}
+                            />
+                            <Input
+                                placeholder="Card Holder Name"
+                                onChangeText={(value) => setCardDetails({ ...cardDetails, cardHolderName: value })}
+                                backgroundColor={theme.background}
+                                color={theme.color}
+                                fontSize={14}
+                            />
+                        </YStack>
+                    )}
+
+                    <YStack flex={1} justifyContent="flex-end">
+                        <Button
+                            onPress={handleConfirmPayment}
+                            backgroundColor={theme.accentBackground}
+                            borderRadius={30}
+                            paddingHorizontal={15}
+                            height={52}
+                        >
+                            <Text color={theme.color} fontWeight="600" fontSize={16}>Confirm Payment</Text>
+                        </Button>
+                    </YStack>
+                </YStack>
             </ScrollView >
         </>
     )

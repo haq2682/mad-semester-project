@@ -1,12 +1,13 @@
 import { Link, usePathname } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Button, Input, Text, Theme, useTheme, View, ScrollView, Stack, YStack, XStack, H4, Card } from 'tamagui';
+import React, { useState } from 'react';
+import { Input, Text, Theme, useTheme, View, ScrollView, Stack, YStack, XStack, H4, Card } from 'tamagui';
 import { Image } from 'react-native'
 import { FlatList, Animated, Dimensions } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 
 interface CardItemProps {
+  id: number,
   title: string;
   price: number;
 }
@@ -72,17 +73,19 @@ export default function Home() {
 
   const CardItem = (props: CardItemProps) => {
     return (
-      <Card elevation={2} size="$4" bordered hoverStyle={{ scale: 0.925 }} pressStyle={{ scale: 0.85 }} animation='bouncy'>
-        <H4 paddingRight={90} paddingLeft={15} paddingTop={5}>{props.title}</H4>
-        <Card.Footer padded height={150} flex={1} flexDirection='row' alignItems='flex-end' justifyContent='flex-end'>
-          <View>
-            <Card elevation={1} padding={10}><Text borderRadius="$10" color={theme.color}>${props.price}</Text></Card>
-          </View>
-        </Card.Footer>
-        <Card.Background>
-          <Image source={require('assets/item-burger.png')} className="h-40 my-3 m-auto w-40" />
-        </Card.Background>
-      </Card >
+      <Link href={`/item/${props.id}`} asChild>
+        <Card elevation={2} size="$4" bordered hoverStyle={{ scale: 0.925 }} pressStyle={{ scale: 0.85 }} animation='bouncy'>
+          <H4 paddingRight={90} paddingLeft={15} paddingTop={5}>{props.title}</H4>
+          <Card.Footer padded height={150} flex={1} flexDirection='row' alignItems='flex-end' justifyContent='flex-end'>
+            <View>
+              <Card elevation={1} padding={10}><Text borderRadius="$10" color={theme.color}>${props.price}</Text></Card>
+            </View>
+          </Card.Footer>
+          <Card.Background>
+            <Image source={require('assets/item-burger.png')} className="h-40 my-3 m-auto w-40" />
+          </Card.Background>
+        </Card >
+      </Link>
     )
   }
 
@@ -134,7 +137,7 @@ export default function Home() {
               <XStack key={rowIndex} justifyContent="center" space="$4">
                 {row.map((card) => (
                   <CardItem
-                    key={card.id}
+                    id={card.id}
                     title={card.title}
                     price={card.price}
                   />
@@ -188,6 +191,16 @@ export default function Home() {
               <Link href="/cart" asChild onPress={toggleSidebar}>
                 <View padding="$4" backgroundColor={isActive('/cart') ? theme.color3 : theme.color2}>
                   <Text color={isActive('/cart') ? theme.accentColor : theme.color}>Cart</Text>
+                </View>
+              </Link>
+              <Link href="/about" asChild onPress={toggleSidebar}>
+                <View padding="$4" backgroundColor={isActive('/cart') ? theme.color3 : theme.color2}>
+                  <Text color={isActive('/cart') ? theme.accentColor : theme.color}>About</Text>
+                </View>
+              </Link>
+              <Link href="/contact" asChild onPress={toggleSidebar}>
+                <View padding="$4" backgroundColor={isActive('/cart') ? theme.color3 : theme.color2}>
+                  <Text color={isActive('/cart') ? theme.accentColor : theme.color}>Contact</Text>
                 </View>
               </Link>
             </YStack>
