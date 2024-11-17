@@ -1,5 +1,5 @@
 import { ScrollView, View, Text, useTheme, Card, YStack, Button, Input } from "tamagui";
-import { Stack, useNavigation } from 'expo-router';
+import { router, Stack, useNavigation } from 'expo-router';
 import { Image } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useEffect, useState } from "react";
@@ -73,7 +73,7 @@ export default function Cart() {
     const handleConfirmPayment = () => {
         if (paymentMethod === 'COD') {
             alert('Cash on Delivery selected!');
-            navigation.navigate('confirm');
+            router.replace('/confirm')
         } else if (paymentMethod === 'Card') {
             if (
                 cardDetails.cardNumber &&
@@ -82,7 +82,7 @@ export default function Cart() {
                 cardDetails.cardHolderName
             ) {
                 alert('Payment successful!');
-                navigation.navigate('confirm');
+                router.replace('/confirm')
             } else {
                 alert('Please fill in all card details.');
             }
