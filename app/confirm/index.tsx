@@ -1,6 +1,6 @@
 import React from 'react';
 import { YStack, Text, Button, View, useTheme, Image } from "tamagui";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useNavigation } from 'expo-router';
 
 
@@ -10,7 +10,7 @@ export default function ThankYouScreen() {
   //const { orderId } = route.params; // Assuming orderId is passed via route params
 
   const handlePlaceAnotherOrder = () => {
-    navigation.navigate('Home');
+    router.replace('/');
   };
 
   return (
