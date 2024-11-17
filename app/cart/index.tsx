@@ -1,8 +1,8 @@
 import { ScrollView, View, Text, useTheme, Card, YStack, Button, Input } from "tamagui";
-import { router, Stack, useNavigation } from 'expo-router';
+import { router } from 'expo-router';
 import { Image } from "react-native";
 import { AntDesign } from '@expo/vector-icons';
-import { useTheme } from 'tamagui';
+import { useEffect, useState } from "react";
 
 interface CartItemProps {
     id: number;
@@ -63,7 +63,7 @@ const CartItem = ({ id, title, price, image, quantity, updateQuantity }: CartIte
                         justifyContent="center"
                         onPress={() => updateQuantity(id, quantity - 1)}
                     >
-                        <AntDesign name="minus" size={15} color={theme.accentColor} />
+                        <AntDesign name="minus" size={15} style={{ color: theme.accentColor.val }} />
                     </Button>
                     <Text color={theme.color} marginHorizontal={3} fontSize={15}>
                         {quantity}
@@ -78,7 +78,7 @@ const CartItem = ({ id, title, price, image, quantity, updateQuantity }: CartIte
                         justifyContent="center"
                         onPress={() => updateQuantity(id, quantity + 1)}
                     >
-                        <AntDesign name="plus" size={15} color={theme.accentColor} />
+                        <AntDesign name="plus" size={15} style={{ color: theme.accentColor.val }} />
                     </Button>
                 </View>
             </View>
@@ -88,7 +88,6 @@ const CartItem = ({ id, title, price, image, quantity, updateQuantity }: CartIte
 
 export default function Cart() {
     const theme = useTheme();
-    const navigation = useNavigation();
     const [items, setItems] = useState<CartItemProps[]>([]);
     const [subTotal, setSubTotal] = useState(0);
     const [grandTotal, setGrandTotal] = useState(0);
