@@ -3,6 +3,7 @@ import { ScrollView, View, Text, Card, YStack, Button, Input } from "tamagui";
 import { Stack, useNavigation } from 'expo-router';
 import { Image } from "react-native";
 import { AntDesign } from '@expo/vector-icons';
+import { useTheme } from 'tamagui';
 
 interface CartItemProps {
   id: number;
@@ -22,25 +23,63 @@ const cartItems: CartItemProps[] = [
 ];
 
 const CartItem = ({ id, title, price, image, quantity, updateQuantity }: CartItemProps & { updateQuantity: (id: number, quantity: number) => void }) => {
+  const theme = useTheme();
   return (
-    <View flex={1} flexDirection="row" justifyContent="space-between" backgroundColor="$background075" marginVertical={2.5} padding="$3">
+    <View
+      flex={1}
+      flexDirection="row"
+      justifyContent="space-between"
+      backgroundColor={theme.color2}
+      marginVertical={5}
+      padding="$3"
+      borderRadius="$3"
+    >
       <View flex={1} flexDirection="row">
         <Card elevation={2}>
           <Image source={{ uri: image }} style={{ height: 80, width: 80 }} />
         </Card>
-        <View marginTop="$2" marginLeft="$3">
-          <Text fontSize={16} fontWeight="700">{title}</Text>
+        <View marginLeft="$3">
+          <Text fontSize={16} fontWeight="700" color={theme.color}>
+            {title}
+          </Text>
         </View>
       </View>
-      <View flex={1} flexDirection="column" justifyContent="space-between" alignItems="flex-end">
-        <Text>${price.toFixed(2)}</Text>
-        <View backgroundColor="$accentBackground" flexDirection="row" marginBottom={10} paddingHorizontal="$2" paddingVertical="$2" borderRadius={10} justifyContent="space-between" alignItems="center">
-          <Button backgroundColor="$background" borderRadius={100} padding="$1" onPress={() => updateQuantity(id, quantity - 1)}>
-            <AntDesign name="minus" size={15} color="$accentColor" />
+      <View flexDirection="column" justifyContent="space-between" alignItems="flex-end">
+        <Text color={theme.color}>${price.toFixed(2)}</Text>
+        <View
+          backgroundColor={theme.accentBackground}
+          flexDirection="row"
+          padding="$2"
+          borderRadius="$3"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Button
+            backgroundColor={theme.color10}
+            borderRadius={50}
+            padding={0}
+            height={30}
+            width={30}
+            alignItems="center"
+            justifyContent="center"
+            onPress={() => updateQuantity(id, quantity - 1)}
+          >
+            <AntDesign name="minus" size={15} color={theme.accentColor} />
           </Button>
-          <Text color="white" marginHorizontal={3} fontSize={15}>{quantity}</Text>
-          <Button backgroundColor="$background" borderRadius={100} padding="$1" onPress={() => updateQuantity(id, quantity + 1)}>
-            <AntDesign name="plus" size={15} color="$accentColor" />
+          <Text color={theme.color} marginHorizontal={3} fontSize={15}>
+            {quantity}
+          </Text>
+          <Button
+            backgroundColor={theme.color10}
+            borderRadius={50}
+            padding={0}
+            height={30}
+            width={30}
+            alignItems="center"
+            justifyContent="center"
+            onPress={() => updateQuantity(id, quantity + 1)}
+          >
+            <AntDesign name="plus" size={15} color={theme.accentColor} />
           </Button>
         </View>
       </View>
@@ -49,6 +88,7 @@ const CartItem = ({ id, title, price, image, quantity, updateQuantity }: CartIte
 };
 
 export default function Cart() {
+  const theme = useTheme();
   const navigation = useNavigation();
   const [items, setItems] = useState<CartItemProps[]>([]);
   const [subTotal, setSubTotal] = useState(0);
@@ -102,112 +142,89 @@ export default function Cart() {
   }, [items]);
 
   return (
-    <>
-      <Stack.Screen options={{
-        headerShown: true,
-        title: "Cart",
-        headerStyle: {
-          backgroundColor: "$color8",
-        }
-      }} />
-      <ScrollView backgroundColor="$background" contentContainerStyle={{ flexGrow: 1 }}>
-        <View marginVertical={10}>
-          {items.map((item) => (
-            <CartItem key={item.id} {...item} updateQuantity={updateQuantity} />
-          ))}
-        </View>
-        <View backgroundColor="$color3" paddingHorizontal={10}>
-          <View marginVertical={2.5} flex={1} flexDirection="row" justifyContent="space-between">
-            <Text fontSize={16} fontWeight="900">Subtotal</Text>
-            <Text fontSize={16} fontWeight="900">${subTotal.toFixed(2)}</Text>
-          </View>
-          <View marginVertical={2.5} flex={1} flexDirection="row" justifyContent="space-between">
-            <Text fontSize={14} fontWeight="800">Delivery Fee</Text>
-            <Text fontSize={14} fontWeight="800">${deliveryFee.toFixed(2)}</Text>
-          </View>
-          <View marginVertical={2.5} flex={1} flexDirection="row" justifyContent="space-between">
-            <Text fontSize={18} fontWeight="900">Grand Total</Text>
-            <Text fontSize={18} fontWeight="900">${grandTotal.toFixed(2)}</Text>
-          </View>
-        </View>
-        <YStack padding={20} space={20} flex={1}>
-          <Text fontWeight="900" fontSize={20} textAlign="center">
-            Select Payment Method
+    <ScrollView backgroundColor={theme.background} contentContainerStyle={{ flexGrow: 1 }}>
+      <View marginVertical={10}>
+        {items.map((item) => (
+          <CartItem key={item.id} {...item} updateQuantity={updateQuantity} />
+        ))}
+      </View>
+      <View backgroundColor={theme.color10} paddingHorizontal={10} borderRadius="$3">
+        <View marginVertical={5} flexDirection="row" justifyContent="space-between">
+          <Text fontSize={16} fontWeight="900" color={theme.color}>
+            Subtotal
           </Text>
-
-          <YStack space={15}>
-            <Button
-              onPress={() => setPaymentMethod('COD')}
-              backgroundColor={paymentMethod === 'COD' ? '$accentBackground' : '$color1'}
-              borderColor={paymentMethod === 'COD' ? '$color' : 'black'}
-              borderWidth={1}
-              borderRadius={30}
-              paddingVertical={15}
-              height={52}
-            >
-              <Text fontWeight="600" fontSize={16}>Cash on Delivery</Text>
-            </Button>
-
-            <Button
-              onPress={() => setPaymentMethod('Card')}
-              backgroundColor={paymentMethod === 'Card' ? '$accentBackground' : '$color1'}
-              borderColor={paymentMethod === 'Card' ? '$color' : 'black'}
-              borderWidth={1}
-              borderRadius={30}
-              paddingVertical={15}
-              height={52}
-            >
-              <Text fontWeight="600" fontSize={16}>Credit/Debit Card</Text>
-            </Button>
-          </YStack>
-
-          {paymentMethod === 'Card' && (
-            <YStack space={15} backgroundColor="$color1" padding={15} borderRadius={10}>
-              <Input
-                placeholder="Card Number"
-                keyboardType="numeric"
-                maxLength={16}
-                onChangeText={(value) => setCardDetails({ ...cardDetails, cardNumber: value })}
-                backgroundColor="$background"
-                fontSize={14}
-              />
-              <Input
-                placeholder="Expiry Date (MM/YY)"
-                maxLength={5}
-                onChangeText={(value) => setCardDetails({ ...cardDetails, expiryDate: value })}
-                backgroundColor="$background"
-                fontSize={14}
-              />
-              <Input
-                placeholder="CVV"
-                keyboardType="numeric"
-                maxLength={3}
-                onChangeText={(value) => setCardDetails({ ...cardDetails, cvv: value })}
-                backgroundColor="$background"
-                fontSize={14}
-              />
-              <Input
-                placeholder="Card Holder Name"
-                onChangeText={(value) => setCardDetails({ ...cardDetails, cardHolderName: value })}
-                backgroundColor="$background"
-                fontSize={14}
-              />
-            </YStack>
-          )}
-
-          <YStack flex={1} justifyContent="flex-end">
-            <Button
-              onPress={handleConfirmPayment}
-              backgroundColor="$accentBackground"
-              borderRadius={30}
-              paddingHorizontal={15}
-              height={52}
-            >
-              <Text fontWeight="600" fontSize={16}>Confirm Payment</Text>
-            </Button>
-          </YStack>
+          <Text fontSize={16} fontWeight="900" color={theme.color}>
+            ${subTotal.toFixed(2)}
+          </Text>
+        </View>
+        <View marginVertical={5} flexDirection="row" justifyContent="space-between">
+          <Text fontSize={14} fontWeight="800" color={theme.color}>
+            Delivery Fee
+          </Text>
+          <Text fontSize={14} fontWeight="800" color={theme.color}>
+            ${deliveryFee.toFixed(2)}
+          </Text>
+        </View>
+        <View marginVertical={5} flexDirection="row" justifyContent="space-between">
+          <Text fontSize={18} fontWeight="900" color={theme.color}>
+            Grand Total
+          </Text>
+          <Text fontSize={18} fontWeight="900" color={theme.color}>
+            ${grandTotal.toFixed(2)}
+          </Text>
+        </View>
+      </View>
+      <YStack padding={20} space={20}>
+        <Text fontWeight="900" fontSize={20} textAlign="center" color={theme.color}>
+          Select Payment Method
+        </Text>
+        {/* Payment Buttons */}
+        <YStack space={15}>
+          <Button
+            onPress={() => setPaymentMethod('COD')}
+            backgroundColor={paymentMethod === 'COD' ? theme.accentBackground : theme.color10}
+            borderRadius={30}
+            paddingVertical={15}
+            height={52}
+          >
+            <Text fontWeight="600" fontSize={16} color={theme.color}>
+              Cash on Delivery
+            </Text>
+          </Button>
+          <Button
+            onPress={() => setPaymentMethod('Card')}
+            backgroundColor={paymentMethod === 'Card' ? theme.accentBackground : theme.color10}
+            borderRadius={30}
+            paddingVertical={15}
+            height={52}
+          >
+            <Text fontWeight="600" fontSize={16} color={theme.color}>
+              Credit/Debit Card
+            </Text>
+          </Button>
         </YStack>
-      </ScrollView>
-    </>
+        {/* Card Details */}
+        {paymentMethod === 'Card' && (
+          <YStack space={15} backgroundColor={theme.color2} padding={15} borderRadius="$3">
+            <Input placeholder="Card Number" keyboardType="numeric" maxLength={16} backgroundColor={theme.color1} />
+            <Input placeholder="Expiry Date (MM/YY)" maxLength={5} backgroundColor={theme.color1} />
+            <Input placeholder="CVV" keyboardType="numeric" maxLength={3} backgroundColor={theme.color1} />
+            <Input placeholder="Card Holder Name" backgroundColor={theme.color1} />
+          </YStack>
+        )}
+        {/* Confirm Button */}
+        <Button
+          onPress={handleConfirmPayment}
+          backgroundColor={theme.accentBackground}
+          borderRadius={30}
+          paddingHorizontal={15}
+          height={52}
+        >
+          <Text fontWeight="600" fontSize={16} color={theme.color}>
+            Confirm Payment
+          </Text>
+        </Button>
+      </YStack>
+    </ScrollView>
   );
 }
