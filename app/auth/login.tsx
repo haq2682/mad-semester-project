@@ -4,6 +4,13 @@ export default function Login() {
     const theme = useTheme();
     return (
         <>
+            <Stack.Screen options={{
+                headerShown: true,
+                title: "Login",
+                headerStyle: {
+                    backgroundColor: theme.color8.val
+                }
+            }} />
             <ScrollView backgroundColor={theme.background}>
                 <View paddingTop={40} height={'100%'} flex={1} flexDirection="column" alignItems="center">
                     <View marginTop={60}>
