@@ -1,4 +1,5 @@
 import { ScrollView, View, Text, Input, useTheme, Button } from "tamagui";
+import { Stack } from "expo-router";
 
 export default function Login() {
     const theme = useTheme();

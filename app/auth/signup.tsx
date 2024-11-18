@@ -1,4 +1,5 @@
 import { Input, Text, useTheme, View, ScrollView, Button, YStack } from "tamagui";
+import { Stack } from "expo-router";
 
 export default function Signup() {
     const theme = useTheme();
