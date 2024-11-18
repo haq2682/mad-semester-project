@@ -1,8 +1,7 @@
 import { Link, usePathname } from 'expo-router';
 import React, { useState } from 'react';
 import { Input, Text, Theme, useTheme, View, ScrollView, Stack, YStack, XStack, H4, Card } from 'tamagui';
-import { Image } from 'react-native'
-import { FlatList, Animated, Dimensions } from 'react-native';
+import { FlatList, Animated, Dimensions, Image } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 
@@ -196,12 +195,22 @@ export default function Home() {
               </Link>
               <Link href="/about" asChild onPress={toggleSidebar}>
                 <View padding="$4" backgroundColor={isActive('/cart') ? theme.color3 : theme.color2}>
-                  <Text color={isActive('/cart') ? theme.accentColor : theme.color}>About</Text>
+                  <Text color={isActive('/about') ? theme.accentColor : theme.color}>About</Text>
                 </View>
               </Link>
               <Link href="/contact" asChild onPress={toggleSidebar}>
                 <View padding="$4" backgroundColor={isActive('/cart') ? theme.color3 : theme.color2}>
-                  <Text color={isActive('/cart') ? theme.accentColor : theme.color}>Contact</Text>
+                  <Text color={isActive('/contact') ? theme.accentColor : theme.color}>Contact</Text>
+                </View>
+              </Link>
+              <Link href="/auth/login" asChild onPress={toggleSidebar}>
+                <View padding="$4" backgroundColor={isActive('/cart') ? theme.color3 : theme.color2}>
+                  <Text color={isActive('/auth/login') ? theme.accentColor : theme.color}>Login</Text>
+                </View>
+              </Link>
+              <Link href="/auth/signup" asChild onPress={toggleSidebar}>
+                <View padding="$4" backgroundColor={isActive('/cart') ? theme.color3 : theme.color2}>
+                  <Text color={isActive('/auth/register') ? theme.accentColor : theme.color}>Register</Text>
                 </View>
               </Link>
             </YStack>
