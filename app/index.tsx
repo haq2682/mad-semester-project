@@ -137,6 +137,7 @@ export default function Home() {
               <XStack key={rowIndex} justifyContent="center" space="$4">
                 {row.map((card) => (
                   <CardItem
+                    key={card.id}
                     id={card.id}
                     title={card.title}
                     price={card.price}
