@@ -1,8 +1,8 @@
+import React, { useEffect, useState } from "react";
 import { ScrollView, View, Text, useTheme, Card, YStack, Button, Input } from "tamagui";
 import { router, Stack } from 'expo-router';
-import { Image } from "react-native";
+import { Image, FlatList } from "react-native";
 import { AntDesign } from '@expo/vector-icons';
-import { useEffect, useState } from "react";
 
 interface CartItemProps {
     id: number;
@@ -139,6 +139,10 @@ export default function Cart() {
         setGrandTotal(newSubTotal + deliveryFee);
     }, [items]);
 
+    const renderItem = ({ item }: { item: CartItemProps }) => (
+        <CartItem key={item.id} {...item} updateQuantity={updateQuantity} />
+    );
+
     return (
         <>
             <Stack.Screen options={{
@@ -150,9 +154,11 @@ export default function Cart() {
             }} />
             <ScrollView backgroundColor={theme.background} contentContainerStyle={{ flexGrow: 1 }}>
                 <View marginVertical={10}>
-                    {items.map((item) => (
-                        <CartItem key={item.id} {...item} updateQuantity={updateQuantity} />
-                    ))}
+                    <FlatList
+                        data={items}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.id.toString()}
+                    />
                 </View>
                 <View backgroundColor={theme.color10} paddingHorizontal={10} borderRadius="$3">
                     <View marginVertical={5} flexDirection="row" justifyContent="space-between">
