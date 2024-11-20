@@ -98,7 +98,7 @@ export default function Home() {
   );
 
   const renderFoodItem = ({ item, index }: { item: CardItemProps; index: number }) => (
-    <XStack key={item.id} justifyContent="center" space="$4" marginBottom={index % 2 === 0 ? '$4' : 0}>
+    <XStack key={item.id} justifyContent="center" space="$4" marginBottom="$4" marginHorizontal="$1">
       <CardItem id={item.id} title={item.title} price={item.price} />
     </XStack>
   );
@@ -154,17 +154,40 @@ export default function Home() {
         }}
       >
         <YStack marginTop={40}>
-          <FlatList
-            data={sidebarMenuItems}
-            keyExtractor={(item: sidebarMenuItemsProps) => item.title}
-            renderItem={({ item }) => (
-              <Link href={item.path} asChild onPress={toggleSidebar}>
-                <View padding="$4" backgroundColor={isActive(item.path as string) ? theme.color3 : theme.color2}>
-                  <Text color={isActive(item.path as string) ? theme.accentColor : theme.color}>{item.title}</Text>
-                </View>
-              </Link>
-            )}
-          />
+          <YStack space>
+            <View width={'100%'}
+              style={{
+                flex: 1,
+                position: 'relative',
+              }}
+              marginBottom={10}
+            >
+              <AntDesign
+                name="close"
+                size={24}
+                style={{
+                  color: 'black',
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                }}
+                onPress={toggleSidebar}
+              />
+              <View marginTop="$4">
+                <FlatList
+                  data={sidebarMenuItems}
+                  keyExtractor={(item: sidebarMenuItemsProps) => item.title}
+                  renderItem={({ item }) => (
+                    <Link href={item.path} asChild onPress={toggleSidebar}>
+                      <View padding="$4" marginVertical="$2" backgroundColor={isActive(item.path as string) ? theme.color3 : theme.color2}>
+                        <Text color={isActive(item.path as string) ? theme.accentColor : theme.color}>{item.title}</Text>
+                      </View>
+                    </Link>
+                  )}
+                />
+              </View>
+            </View>
+          </YStack>
         </YStack>
       </Animated.View>
     </ScrollView>
