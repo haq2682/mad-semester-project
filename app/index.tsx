@@ -1,9 +1,10 @@
-import { Href, Link, usePathname } from 'expo-router';
-import React, { useState } from 'react';
-import { Input, Text, Theme, useTheme, View, ScrollView, Stack, YStack, XStack, H4, Card } from 'tamagui';
+import { Href, Link, usePathname, useRouter } from 'expo-router';
+import React, { useState, useEffect } from 'react';
+import { Input, Text, useTheme, View, ScrollView, Stack, YStack, XStack, H4, Card } from 'tamagui';
 import { FlatList, Animated, Dimensions, Image } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+import { supabase, logout, getCurrentUser } from '../lib/supabase';
 
 interface CardItemProps {
   id: number;
@@ -17,8 +18,9 @@ interface CategoryProps {
 }
 
 interface sidebarMenuItemsProps {
-  path: Href<string>,
-  title: string,
+  path: Href<string>;
+  title: string;
+  onPress?: () => void;
 }
 
 const categoryData: CategoryProps[] = [
@@ -38,23 +40,24 @@ const itemData: CardItemProps[] = [
   { id: 6, title: 'Card 6', price: 15 },
 ];
 
-const sidebarMenuItems: sidebarMenuItemsProps[] = [
-  { path: '/', title: 'Home' },
-  { path: '/profile', title: 'Profile' },
-  { path: '/cart', title: 'Cart' },
-  { path: '/about', title: 'About' },
-  { path: '/contact', title: 'Contact' },
-  { path: '/auth/login', title: 'Login' },
-  { path: '/auth/signup', title: 'Register' },
-];
-
 const screenWidth = Dimensions.get('window').width;
 
 export default function Home() {
   const theme = useTheme();
-  const router = usePathname();
+  const pathname = usePathname();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const slideAnim = useState(new Animated.Value(-screenWidth * 0.8))[0];
+
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+
+  const checkLoginStatus = async () => {
+    const user = await getCurrentUser();
+    setIsLoggedIn(!!user);
+  };
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -64,6 +67,31 @@ export default function Home() {
       useNativeDriver: true,
     }).start();
   };
+
+  const handleLogout = async () => {
+    const { error } = await logout();
+    if (error) {
+      console.error('Logout failed:', error.message);
+    } else {
+      setIsLoggedIn(false);
+      toggleSidebar();
+      router.push('/auth/login');
+    }
+  };
+
+  const getSidebarMenuItems = (): any[] => [
+    { path: '/', title: 'Home' },
+    { path: '/profile', title: 'Profile' },
+    { path: '/cart', title: 'Cart' },
+    { path: '/about', title: 'About' },
+    { path: '/contact', title: 'Contact' },
+    ...(isLoggedIn
+      ? [{ path: '#', title: 'Logout', onPress: handleLogout }]
+      : [
+        { path: '/auth/login', title: 'Login' },
+        { path: '/auth/signup', title: 'Register' },
+      ]),
+  ];
 
   const renderCategoryItem = ({ item }: { item: CategoryProps }) => (
     <Stack
@@ -103,7 +131,7 @@ export default function Home() {
     </XStack>
   );
 
-  const isActive = (path: string) => router === path;
+  const isActive = (path: string) => pathname === path;
 
   return (
     <ScrollView backgroundColor={theme.background}>
@@ -175,14 +203,20 @@ export default function Home() {
               />
               <View marginTop="$4">
                 <FlatList
-                  data={sidebarMenuItems}
+                  data={getSidebarMenuItems()}
                   keyExtractor={(item: sidebarMenuItemsProps) => item.title}
                   renderItem={({ item }) => (
-                    <Link href={item.path} asChild onPress={toggleSidebar}>
-                      <View padding="$4" marginVertical="$2" backgroundColor={isActive(item.path as string) ? theme.color3 : theme.color2}>
-                        <Text color={isActive(item.path as string) ? theme.accentColor : theme.color}>{item.title}</Text>
+                    item.onPress ? (
+                      <View padding="$4" marginVertical="$2" backgroundColor={theme.color2}>
+                        <Text color={theme.color} onPress={item.onPress}>{item.title}</Text>
                       </View>
-                    </Link>
+                    ) : (
+                      <Link href={item.path} asChild onPress={toggleSidebar}>
+                        <View padding="$4" marginVertical="$2" backgroundColor={isActive(item.path as string) ? theme.color3 : theme.color2}>
+                          <Text color={isActive(item.path as string) ? theme.accentColor : theme.color}>{item.title}</Text>
+                        </View>
+                      </Link>
+                    )
                   )}
                 />
               </View>
@@ -193,3 +227,5 @@ export default function Home() {
     </ScrollView>
   );
 }
+
+
