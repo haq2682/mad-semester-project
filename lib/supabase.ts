@@ -70,4 +70,3 @@ export const isLoggedIn = async (): Promise<boolean> => {
     const session = await getCurrentSession()
     return session !== null
 }
-

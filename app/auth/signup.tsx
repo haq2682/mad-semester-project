@@ -1,101 +1,68 @@
-import React, { useState } from 'react';
-import { ScrollView, View, Text, Input, useTheme, Button, YStack, XStack } from "tamagui";
-import { Stack, useRouter } from "expo-router";
-import { supabase, logSupabaseError } from '../../lib/supabase';
-import { Alert } from 'react-native';
-import * as crypto from 'crypto-js';
+import React, { useState } from 'react'
+import { Alert } from 'react-native'
+import { Input, Text, useTheme, View, ScrollView, Button, YStack, XStack } from "tamagui"
+import { Stack, useRouter } from "expo-router"
+import { supabase } from '~/lib/supabase'
 
-export default function Login() {
-    const theme = useTheme();
-    const router = useRouter();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState({ email: '', password: '' });
+export default function Signup() {
+    const theme = useTheme()
+    const router = useRouter()
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [errors, setErrors] = useState({
+        email: '',
+        password: '',
+        confirmPassword: '',
+    })
 
-    const validateEmail = (email: string) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const validateForm = () => {
+        let isValid = true
+        const newErrors = { ...errors }
+
         if (!email) {
-            return 'Email is required';
+            newErrors.email = 'Email is required'
+            isValid = false
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            newErrors.email = 'Email is invalid'
+            isValid = false
         }
-        if (!emailRegex.test(email)) {
-            return 'Invalid email format';
-        }
-        return '';
-    };
 
-    const validatePassword = (password: string) => {
         if (!password) {
-            return 'Password is required';
-        }
-        if (password.length < 6) {
-            return 'Password must be at least 6 characters long';
-        }
-        return '';
-    };
-
-    const handleEmailChange = (text: string) => {
-        setEmail(text);
-        setErrors(prev => ({ ...prev, email: validateEmail(text) }));
-    };
-
-    const handlePasswordChange = (text: string) => {
-        setPassword(text);
-        setErrors(prev => ({ ...prev, password: validatePassword(text) }));
-    };
-
-    async function handleLogin() {
-        const emailError = validateEmail(email);
-        const passwordError = validatePassword(password);
-
-        if (emailError || passwordError) {
-            setErrors({ email: emailError, password: passwordError });
-            return;
+            newErrors.password = 'Password is required'
+            isValid = false
+        } else if (password.length < 6) {
+            newErrors.password = 'Password must be at least 6 characters'
+            isValid = false
         }
 
-        setLoading(true);
-        try {
-            // Fetch user data from the database
-            const { data: userData, error: userError } = await supabase
-                .from('users')
-                .select('*')
-                .eq('email', email)
-                .single();
+        if (password !== confirmPassword) {
+            newErrors.confirmPassword = 'Passwords do not match'
+            isValid = false
+        }
 
-            if (userError) throw userError;
+        setErrors(newErrors)
+        return isValid
+    }
 
-            if (userData) {
-                // Hash the entered password
-                const hashedPassword = crypto.SHA256(password).toString();
+    const handleSubmit = async () => {
+        if (validateForm()) {
+            setLoading(true)
+            const {
+                data: { session },
+                error,
+            } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+            })
 
-                // Compare the hashed password with the stored hash
-                if (hashedPassword === userData.password_hash) {
-                    // Passwords match, proceed with login
-                    const { data, error } = await supabase.auth.signInWithPassword({
-                        email: email,
-                        password: password,
-                    });
-
-                    if (error) throw error;
-
-                    if (data.user) {
-                        Alert.alert("Success", "Logged in successfully!");
-                        router.push('/');
-                    } else {
-                        throw new Error("User data not found");
-                    }
-                } else {
-                    // Passwords don't match
-                    throw new Error("Invalid email or password");
-                }
-            } else {
-                throw new Error("User not found");
+            if (error) Alert.alert(error.message)
+            if (!session && !error) {
+                router.replace('/auth/login');
+                Alert.alert('Please check your inbox for email verification!');
             }
-        } catch (error: any) {
-            logSupabaseError(error);
-            Alert.alert("Error", error.message || "An unexpected error occurred");
-        } finally {
-            setLoading(false);
+            setLoading(false)
         }
     }
 
@@ -103,7 +70,7 @@ export default function Login() {
         <>
             <Stack.Screen options={{
                 headerShown: true,
-                title: "Login",
+                title: "Register",
                 headerStyle: {
                     backgroundColor: theme.color8.val
                 }
@@ -121,10 +88,9 @@ export default function Login() {
                                 backgroundColor={theme.color1}
                                 marginVertical={5}
                                 value={email}
-                                onChangeText={handleEmailChange}
+                                onChangeText={setEmail}
                                 keyboardType="email-address"
                                 autoCapitalize="none"
-                                borderColor={errors.email ? 'red' : theme.color1}
                             />
                             {errors.email ? <Text color="red" fontSize={12}>{errors.email}</Text> : null}
                         </XStack>
@@ -134,27 +100,31 @@ export default function Login() {
                                 backgroundColor={theme.color1}
                                 marginVertical={5}
                                 value={password}
-                                onChangeText={handlePasswordChange}
+                                onChangeText={setPassword}
                                 secureTextEntry
-                                borderColor={errors.password ? 'red' : theme.color1}
                             />
                             {errors.password ? <Text color="red" fontSize={12}>{errors.password}</Text> : null}
                         </XStack>
+                        <XStack flexDirection="column">
+                            <Input
+                                placeholder="Confirm Password"
+                                backgroundColor={theme.color1}
+                                marginVertical={5}
+                                value={confirmPassword}
+                                onChangeText={setConfirmPassword}
+                                secureTextEntry
+                            />
+                            {errors.confirmPassword ? <Text color="red" fontSize={12}>{errors.confirmPassword}</Text> : null}
+                        </XStack>
                     </View>
-                    <YStack marginTop={20} width={'95%'} space={10}>
+                    <YStack marginTop={20} width={'95%'}>
                         <Button
                             backgroundColor={theme.accentBackground}
                             color={theme.color}
-                            onPress={handleLogin}
-                            disabled={loading || !!errors.email || !!errors.password}
+                            onPress={handleSubmit}
+                            disabled={loading}
                         >
-                            {loading ? 'Logging in...' : 'Login'}
-                        </Button>
-                        <Button backgroundColor={theme.background} color={theme.accentColor} borderColor={theme.accentColor}>
-                            Register With Google
-                        </Button>
-                        <Button backgroundColor={theme.background} color={theme.accentColor} borderColor={theme.accentColor}>
-                            Register With Facebook
+                            {loading ? 'Submitting...' : 'Submit'}
                         </Button>
                     </YStack>
                 </View>
@@ -162,5 +132,3 @@ export default function Login() {
         </>
     )
 }
-
-

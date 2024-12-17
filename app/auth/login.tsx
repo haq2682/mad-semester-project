@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollView, View, Text, Input, useTheme, Button, YStack, XStack } from "tamagui";
 import { Stack, useRouter } from "expo-router";
-import { supabase, logSupabaseError } from '../../lib/supabase';
+import { supabase, logSupabaseError, comparePassword } from '../../lib/supabase';
 import { Alert } from 'react-native';
 
 export default function Login() {
@@ -44,45 +44,14 @@ export default function Login() {
     };
 
     async function handleLogin() {
-        const emailError = validateEmail(email);
-        const passwordError = validatePassword(password);
-
-        if (emailError || passwordError) {
-            setErrors({ email: emailError, password: passwordError });
-            return;
-        }
-
-        setLoading(true);
-        try {
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
-
-            if (error) throw error;
-
-            if (data.user) {
-                const { data: userData, error: userError } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('user_id', data.user.id)
-                    .single();
-
-                if (userError) throw userError;
-
-                if (userData) {
-                    Alert.alert("Success", "Logged in successfully!");
-                    router.push('/');
-                } else {
-                    throw new Error("User data not found");
-                }
-            }
-        } catch (error: any) {
-            logSupabaseError(error);
-            Alert.alert("Error", error.message || "An unexpected error occurred");
-        } finally {
-            setLoading(false);
-        }
+        setLoading(true)
+        const { error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password,
+        })
+        if (error) Alert.alert(error.message)
+        else router.replace('/');
+        setLoading(false)
     }
 
     return (
@@ -135,12 +104,6 @@ export default function Login() {
                             disabled={loading || !!errors.email || !!errors.password}
                         >
                             {loading ? 'Logging in...' : 'Login'}
-                        </Button>
-                        <Button backgroundColor={theme.background} color={theme.accentColor} borderColor={theme.accentColor}>
-                            Register With Google
-                        </Button>
-                        <Button backgroundColor={theme.background} color={theme.accentColor} borderColor={theme.accentColor}>
-                            Register With Facebook
                         </Button>
                     </YStack>
                 </View>
