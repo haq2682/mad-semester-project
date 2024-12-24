@@ -8,6 +8,8 @@ import { logout, getCurrentUser } from '../lib/supabase';
 import { searchItems } from '../app/actions/search';
 import { fetchMenuCategories } from './actions/fetchMenuCategories';
 import { fetchHotSales, fetchNewProducts } from './actions/fetchProducts';
+import { LinearGradient } from 'expo-linear-gradient';
+
 
 interface CardItemProps {
   id: number;
@@ -138,26 +140,35 @@ export default function Home() {
         { path: '/auth/signup', title: 'Register' },
       ]),
   ];
-
   const renderCategoryItem = ({ item }: { item: CategoryProps }) => (
     <Link href={`/category/${item.id}`} asChild>
       <TouchableOpacity>
         <Stack
-          bg={theme.color10}
-          padding="$4"
+          bg={theme.accentColor}
+          padding="$1"
           marginHorizontal="$2"
-          borderRadius="$4"
+          borderRadius="$8"
           alignItems="center"
           justifyContent="center"
-          width={120} // Fixed width for uniform size
-          height={120} // Fixed height for uniform size
+          width={120}
+          height={58}
+          shadowColor={theme.shadowColor}
+          shadowOffset={{ width: 0, height: 4 }}
+          shadowOpacity={0.15}
+          shadowRadius={10}
+          pressStyle={{
+            scale: 0.95,
+            backgroundColor: theme.color3
+          }}
+          animation="quick"
         >
           <Text
-            fontSize="$6"
-            fontWeight="600"
-            color={theme.color}
-            textAlign="center" // Center the text horizontally
-            numberOfLines={2} // Prevent overflow for long titles
+            fontSize="$4"
+            fontWeight="700"
+            color='whitesmoke'
+            textAlign="center"
+            numberOfLines={2}
+            letterSpacing={-0.5}
           >
             {item.title}
           </Text>
@@ -165,24 +176,67 @@ export default function Home() {
       </TouchableOpacity>
     </Link>
   );
-  
 
   const CardItem = ({ id, title, price, image }: CardItemProps) => (
     <Link href={`/item/${id}`} asChild>
-      <Card elevation={2} size="$4" bordered hoverStyle={{ scale: 0.925 }} pressStyle={{ scale: 0.85 }} animation='bouncy'>
-        <H4 paddingRight={90} paddingLeft={15} paddingTop={5} color={theme.color}>{title}</H4>
-        <Card.Footer padded height={150} flex={1} flexDirection='row' alignItems='flex-end' justifyContent='flex-end'>
-          <View>
-            <Card elevation={1} padding={10}><Text borderRadius="$10" color={theme.color}>${price}</Text></Card>
-          </View>
+      <Card
+        elevate
+        size="$4"
+        scale={0.9}
+        width={197}
+        height={350}
+        padding="2"
+        marginLeft="$4"
+        marginRight="$4"
+        marginTop="$4"
+        hoverStyle={{ scale: 0.925 }}
+        pressStyle={{ scale: 0.875 }}
+        animation="bouncy"
+        backgroundColor="$background"
+        borderRadius="$4"
+      >
+        <Card.Header padded>
+          <Image 
+            source={require('assets/item-burger.png')} 
+            style={{ 
+              width: '100%', 
+              height: 180, 
+              borderRadius: 12,
+            }} 
+            resizeMode="cover"
+          />
+        </Card.Header>
+        <Card.Footer padded>
+          <YStack space="$2">
+            <Text fontSize="$6" color="$color" numberOfLines={3} fontWeight={"bold"}>
+              {title}
+            </Text>
+            <XStack justifyContent="space-between" alignItems="center" >
+              <Text fontSize="$6" fontWeight="bold" color="green" >
+                ${price}
+              </Text>
+             
+            </XStack>
+            <Card
+                bg={theme.accentColor}
+                borderRadius="$10"
+                alignItems='center'
+                width={120}
+                paddingHorizontal="$3"
+                paddingVertical="$1.5"
+                marginVertical="$2"
+                marginLeft='$4'
+              >
+                <Text color="white"  fontSize="$6" fontWeight={"bold"} >
+                  Order Now
+                </Text>
+              </Card>
+          </YStack>
         </Card.Footer>
-        <Card.Background>
-          <Image source={require('assets/item-burger.png')} style={{ height: 160, width: 160, marginVertical: 12, marginHorizontal: 'auto' }} />
-        </Card.Background>
       </Card>
     </Link>
   );
-
+    
   const renderFoodItem = ({ item, index }: { item: CardItemProps; index: number }) => (
     <XStack key={item.id} justifyContent="center" space="$4" marginBottom="$4" marginHorizontal="$1">
       <CardItem id={item.id} title={item.title} price={item.price} image={item.image} />
@@ -214,28 +268,43 @@ export default function Home() {
 
   return (
     <ScrollView backgroundColor={theme.background}>
-      <View paddingTop={50} paddingBottom={15} paddingHorizontal={10} backgroundColor={theme.color8}>
-        <View flex={1} flexDirection='row' justifyContent='space-between' marginBottom={7}>
-          <View flex={1} flexDirection='row' columnGap={10} alignItems='center'>
-            <AntDesign name="menuunfold" color={theme.color} size={18} onPress={toggleSidebar} />
-            <Text fontWeight={900} fontSize={15} color={theme.color}>Burger Lab Clone</Text>
+      <View 
+        paddingTop={50} 
+        paddingBottom={15} 
+        paddingHorizontal={15} 
+        backgroundColor={theme.accentColor}
+        shadowColor={theme.shadowColor}
+        shadowOffset={{ width: 0, height: 2 }}
+        shadowOpacity={0.1}
+        shadowRadius={4}
+      >
+        <View flex={1} flexDirection='row' justifyContent='space-between' marginBottom={12}>
+          <View flex={1} flexDirection='row' columnGap={12} alignItems='center'>
+            <TouchableOpacity onPress={toggleSidebar}>
+              <AntDesign name="menuunfold" color={theme.color} size={24} />
+            </TouchableOpacity>
+            <Text fontWeight="900" fontSize={18} color={theme.color}>Burger Lab Clone</Text>
           </View>
           <View>
-            {
-              isLoggedIn && (
-                <Link href="/cart" asChild>
-                  <FontAwesome6 name="cart-shopping" size={18} color={theme.color} />
-                </Link>
-              )
-            }
+            {isLoggedIn && (
+              <Link href="/cart" asChild>
+                <TouchableOpacity>
+                  <FontAwesome6 name="cart-shopping" size={24} color={theme.color} />
+                </TouchableOpacity>
+              </Link>
+            )}
           </View>
         </View>
         <Input
           placeholder='Search your favorite food'
-          size={'$2'}
+          size="$4"
           value={searchQuery}
           onChangeText={handleSearch}
           color={theme.color}
+          borderColor={theme.borderColor}
+          borderRadius="$6"
+          paddingLeft="$4"
+          paddingRight="$4"
         />
       </View>
       {isSearching ? (
@@ -302,7 +371,7 @@ export default function Home() {
         </YStack>
       ) : (
         <>
-          <Image source={require('assets/banner.jpg')} style={{ height: 176, marginVertical: 12, borderRadius: 8, marginHorizontal: 'auto', width: '98%', objectFit: 'fill' }} />
+          <Image source={require('assets/hot.jpg')} style={{ height: 176, marginVertical: 12, borderRadius: 8, marginHorizontal: 'auto', width: '98%', objectFit: 'fill' }} />
           <View>
             {categoryLoading && <Spinner size="large"/>}
             <FlatList
@@ -315,30 +384,52 @@ export default function Home() {
             />
           </View>
           <View marginTop={10}>
-            <YStack space="$4" padding="$4">
-              <H4 color={theme.accentColor} textAlign='center' size="$10">Hot Sales</H4>
-              {hotSalesLoading && <Spinner size="large"/>}
-              <FlatList
-                data={hotSales}
-                renderItem={renderFoodItem}
-                keyExtractor={(item) => item.id.toString()}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-              />
-            </YStack>
+            <LinearGradient
+              colors={[theme.accentColor.val, theme.accentColor.val]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={{
+                padding: 12,
+                borderRadius: 12,
+                marginBottom: 16,
+              }}
+            >
+              <H4 color='whitesmoke' textAlign='center' size="$8" fontFamily="Poppins-Bold">
+                <FontAwesome6 name="fire" size={24} color='whitesmoke' /> Hot Sales
+              </H4>
+            </LinearGradient>
+            {hotSalesLoading && <Spinner size="large"/>}
+            <FlatList
+              data={hotSales}
+              renderItem={renderFoodItem}
+              keyExtractor={(item) => item.id.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            />
           </View>
           <View marginTop={10}>
-            <YStack space="$4" padding="$4">
-              <H4 color={theme.accentColor} textAlign='center' size="$10">New</H4>
-              {newLoading && <Spinner size="large"/>}
-              <FlatList
-                data={newProducts}
-                renderItem={renderFoodItem}
-                keyExtractor={(item) => item.id.toString()}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-              />
-            </YStack>
+            <LinearGradient
+              colors={[theme.accentColor.val, theme.accentColor.val]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={{
+                padding: 12,
+                borderRadius: 12,
+                marginBottom: 16,
+              }}
+            >
+              <H4 color='whitesmoke' textAlign='center' size="$8" fontFamily="Poppins-Bold">
+                <FontAwesome6 name="star" size={24} color='whitesmoke' /> New Arrivals
+              </H4>
+            </LinearGradient>
+            {newLoading && <Spinner size="large"/>}
+            <FlatList
+              data={newProducts}
+              renderItem={renderFoodItem}
+              keyExtractor={(item) => item.id.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            />
           </View>
         </>
       )}
@@ -350,6 +441,12 @@ export default function Home() {
           transform: [{ translateX: slideAnim }],
           backgroundColor: theme.accentBackground.val,
           zIndex: 2,
+          borderTopRightRadius: 20,
+          borderBottomRightRadius: 20,
+          shadowColor: theme.shadowColor,
+          shadowOffset: { width: 2, height: 0 },
+          shadowOpacity: 0.3,
+          shadowRadius: 10,
         }}
       >
         <YStack marginTop={40}>
