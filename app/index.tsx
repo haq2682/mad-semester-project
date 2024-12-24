@@ -394,7 +394,7 @@ export default function Home() {
                 marginBottom: 16,
               }}
             >
-              <H4 color='whitesmoke' textAlign='center' size="$8" fontFamily="Poppins-Bold">
+              <H4 color='whitesmoke' textAlign='center' size="$8" >
                 <FontAwesome6 name="fire" size={24} color='whitesmoke' /> Hot Sales
               </H4>
             </LinearGradient>
@@ -418,7 +418,7 @@ export default function Home() {
                 marginBottom: 16,
               }}
             >
-              <H4 color='whitesmoke' textAlign='center' size="$8" fontFamily="Poppins-Bold">
+              <H4 color='whitesmoke' textAlign='center' size="$8" >
                 <FontAwesome6 name="star" size={24} color='whitesmoke' /> New Arrivals
               </H4>
             </LinearGradient>
